@@ -5,6 +5,7 @@ package Controller;
  *
  */
 import java.io.*;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.*;
@@ -13,23 +14,24 @@ import Model.*;
 public class Driver {
 	ArrayList<Athlete> athletesList;
 	ArrayList<Official> officialList;
+	final int TooFewAthleteException = 4;
+	final int GameFullException = 8;
+	final int NoRefereeException = 0;
 
-	
-	public void dbconnection(){
+	public void dbconnection() {
 		Connection c = null;
-		  try {
-		   Class.forName("org.sqlite.JDBC");
-		   c = DriverManager.getConnection("jdbc:sqlite:participants.db");
-		  } catch (Exception e) {
-		   System.err.println(e.getClass().getName() + ": " + e.getMessage());
-		   System.exit(0);
-		  }
-		  System.out.println("Opened database successfully");
+		try {
+			Class.forName("org.sqlite.JDBC");
+			c = DriverManager.getConnection("jdbc:sqlite:participants.db");
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			System.exit(0);
+		}
+		System.out.println("Opened database successfully");
 	}
-	
+
 	public void readFile() {
 		BufferedReader br = null;
-
 		try {
 			br = new BufferedReader(new FileReader("participants.txt"));
 			String line;
@@ -39,7 +41,6 @@ public class Driver {
 			}
 			athletesList = new ArrayList<>();
 			officialList = new ArrayList<>();
-
 			for (String s : itemSet) {
 				String[] items = s.split(",\\s*");
 				if (!validData(items)) {
@@ -107,12 +108,23 @@ public class Driver {
 		return true;
 	}
 
-	public void gamevildation(String gameType, ArrayList<Athlete> athletesList, ArrayList<Official> officialList){
-			
-		
-		
-		
+	public void gamevildation(String gameType, ArrayList<Athlete> athletes, ArrayList<Official> official) {
+		try {
+			if (athletes.size() <= TooFewAthleteException)
+				throw new TooFewAthleteException();
+			else if (athletes.size() >= GameFullException)
+				throw new GameFullException();
+			else if (official.size() == NoRefereeException)
+				throw new NoRefereeException();
+
+		} catch (TooFewAthleteException e1) {
+
+		} catch (GameFullException e2) {
+
+		} catch (NoRefereeException e3) {
+
+		}
+
 	}
-	
 
 }

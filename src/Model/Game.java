@@ -20,6 +20,6 @@ public abstract class Game {
 		this.ID = ID;
 		this.type = type;
 		this.referee = referee;
-	
+		
 	}
 }
