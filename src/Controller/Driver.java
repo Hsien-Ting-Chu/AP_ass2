@@ -12,8 +12,8 @@ import java.util.*;
 import Model.*;
 
 public class Driver {
-	ArrayList<Athlete> athletesList;
-	ArrayList<Official> officialList;
+	private ArrayList<Athlete> athletesList = new ArrayList<>();
+	private ArrayList<Official> officialList = new ArrayList<>();
 	final int TooFewAthleteException = 4;
 	final int GameFullException = 8;
 	final int NoRefereeException = 0;
@@ -39,8 +39,7 @@ public class Driver {
 			while ((line = br.readLine()) != null) {
 				itemSet.add(line);
 			}
-			athletesList = new ArrayList<>();
-			officialList = new ArrayList<>();
+
 			for (String s : itemSet) {
 				String[] items = s.split(",\\s*");
 				if (!validData(items)) {
@@ -62,10 +61,6 @@ public class Driver {
 				else if (type.equals("Officer"))
 					officialList.add(new Official(ID, type, name, age, state));
 			}
-			// for (int i = 0; i < athletesList.size(); i++)
-			// System.out.println(athletesList.get(i));
-			// for (int i = 0; i < officialList.size(); i++)
-			// System.out.println(officialList.get(i));
 		} catch (FileNotFoundException e1) {
 			e1.getMessage();
 		} catch (IOException e2) {
@@ -109,6 +104,7 @@ public class Driver {
 	}
 
 	public void gamevildation(String gameType, ArrayList<Athlete> athletes, ArrayList<Official> official) {
+
 		try {
 			if (athletes.size() <= TooFewAthleteException)
 				throw new TooFewAthleteException();
@@ -125,6 +121,14 @@ public class Driver {
 
 		}
 
+	}
+
+	public ArrayList<Athlete> getAthleteList() {
+		return athletesList;
+	}
+
+	public ArrayList<Official> getOfficialList() {
+		return officialList;
 	}
 
 }
