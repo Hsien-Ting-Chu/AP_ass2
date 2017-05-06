@@ -14,6 +14,7 @@ import Model.*;
 public class Driver {
 	private ArrayList<Athlete> athletesList = new ArrayList<>();
 	private ArrayList<Official> officialList = new ArrayList<>();
+	private ArrayList<Participants> participantsList = new ArrayList<>();
 	final int TooFewAthleteException = 4;
 	final int GameFullException = 8;
 	final int NoRefereeException = 0;
@@ -50,16 +51,26 @@ public class Driver {
 				String name = items[2];
 				int age = Integer.parseInt(items[3]);
 				String state = items[4];
-				if (type.equals("Cyclist"))
+				if (type.equals("Cyclist")) {
 					athletesList.add(new Cyclist(ID, type, name, age, state));
-				else if (type.equals("Swimmer"))
+					participantsList.add(new Cyclist(ID, type, name, age, state));
+				}
+				else if (type.equals("Swimmer")){
 					athletesList.add(new Swimmer(ID, type, name, age, state));
-				else if (type.equals("Sprinter"))
+					participantsList.add(new Swimmer(ID, type, name, age, state));
+				}
+				else if (type.equals("Sprinter")){
 					athletesList.add(new Sprinter(ID, type, name, age, state));
-				else if (type.equals("Super"))
+					participantsList.add(new Sprinter(ID, type, name, age, state));
+				}
+				else if (type.equals("Super")){
 					athletesList.add(new SuperAthlete(ID, type, name, age, state));
-				else if (type.equals("Officer"))
+					participantsList.add(new SuperAthlete(ID, type, name, age, state));
+					}
+				else if (type.equals("Officer")){
 					officialList.add(new Official(ID, type, name, age, state));
+					participantsList.add(new Official(ID, type, name, age, state));
+				}
 			}
 		} catch (FileNotFoundException e1) {
 			e1.getMessage();
@@ -114,11 +125,14 @@ public class Driver {
 				throw new NoRefereeException();
 
 		} catch (TooFewAthleteException e1) {
-
+			
+			System.out.println("do something");
 		} catch (GameFullException e2) {
-
+			
+			System.out.println("do something");
 		} catch (NoRefereeException e3) {
-
+			
+			System.out.println("do something");
 		}
 
 	}
@@ -129,6 +143,9 @@ public class Driver {
 
 	public ArrayList<Official> getOfficialList() {
 		return officialList;
+	}
+	public ArrayList<Participants> getParticipantsList() {
+		return participantsList;
 	}
 
 }

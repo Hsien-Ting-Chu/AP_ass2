@@ -1,10 +1,12 @@
 package Model;
+
 /**
  * @author Hsienting Chu
  *
  */
-import java.util.List;
-
+import java.util.*;
+import View.Ozlympic;
+import Model.*;
 
 public abstract class Game {
 	private String ID;
@@ -20,6 +22,14 @@ public abstract class Game {
 		this.ID = ID;
 		this.type = type;
 		this.referee = referee;
-		
+		try {
+		for(Athlete athlete : athletes){
+			if(!checkIsMatch(athlete)){
+				throw new WrongTypeException();
+			}
+		}
+	}   catch (WrongTypeException e){
+		System.out.println("do something");
 	}
+}
 }
