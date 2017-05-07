@@ -10,16 +10,19 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.*;
 import Model.*;
+import View.Ozlympic;
 
 public class Driver {
 	private ArrayList<Athlete> athletesList = new ArrayList<>();
 	private ArrayList<Official> officialList = new ArrayList<>();
 	private ArrayList<Participants> participantsList = new ArrayList<>();
-	final int TooFewAthleteException = 4;
-	final int GameFullException = 8;
-	final int NoRefereeException = 0;
 
-	public void dbconnection() {
+	public static final String SWIM = "Swimming";
+	public static final String CYCLE = "Cycling";
+	public static final String RUN = "Running";
+	public int gameNum = 0;
+
+	public boolean dbconnection() {
 		Connection c = null;
 		try {
 			Class.forName("org.sqlite.JDBC");
@@ -27,11 +30,12 @@ public class Driver {
 		} catch (Exception e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 			System.exit(0);
+			return false;
 		}
-		System.out.println("Opened database successfully");
+		return true;
 	}
 
-	public void readFile() {
+	public boolean readFile() {
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new FileReader("participants.txt"));
@@ -40,7 +44,6 @@ public class Driver {
 			while ((line = br.readLine()) != null) {
 				itemSet.add(line);
 			}
-
 			for (String s : itemSet) {
 				String[] items = s.split(",\\s*");
 				if (!validData(items)) {
@@ -54,28 +57,26 @@ public class Driver {
 				if (type.equals("Cyclist")) {
 					athletesList.add(new Cyclist(ID, type, name, age, state));
 					participantsList.add(new Cyclist(ID, type, name, age, state));
-				}
-				else if (type.equals("Swimmer")){
+				} else if (type.equals("Swimmer")) {
 					athletesList.add(new Swimmer(ID, type, name, age, state));
 					participantsList.add(new Swimmer(ID, type, name, age, state));
-				}
-				else if (type.equals("Sprinter")){
+				} else if (type.equals("Sprinter")) {
 					athletesList.add(new Sprinter(ID, type, name, age, state));
 					participantsList.add(new Sprinter(ID, type, name, age, state));
-				}
-				else if (type.equals("Super")){
+				} else if (type.equals("Super")) {
 					athletesList.add(new SuperAthlete(ID, type, name, age, state));
 					participantsList.add(new SuperAthlete(ID, type, name, age, state));
-					}
-				else if (type.equals("Officer")){
+				} else if (type.equals("Officer")) {
 					officialList.add(new Official(ID, type, name, age, state));
 					participantsList.add(new Official(ID, type, name, age, state));
 				}
 			}
 		} catch (FileNotFoundException e1) {
 			e1.getMessage();
+			return false;
 		} catch (IOException e2) {
 			e2.printStackTrace();
+			return false;
 		} finally {
 			try {
 				if (br != null)
@@ -84,6 +85,7 @@ public class Driver {
 				throw new RuntimeException("Fail to Close File ");
 			}
 		}
+		return true;
 	}
 
 	public void writeFile() {
@@ -114,27 +116,22 @@ public class Driver {
 		return true;
 	}
 
-	public void gamevildation(String gameType, ArrayList<Athlete> athletes, ArrayList<Official> official) {
-
-		try {
-			if (athletes.size() <= TooFewAthleteException)
-				throw new TooFewAthleteException();
-			else if (athletes.size() >= GameFullException)
-				throw new GameFullException();
-			else if (official.size() == NoRefereeException)
-				throw new NoRefereeException();
-
-		} catch (TooFewAthleteException e1) {
-			
-			System.out.println("do something");
-		} catch (GameFullException e2) {
-			
-			System.out.println("do something");
-		} catch (NoRefereeException e3) {
-			
-			System.out.println("do something");
+	public void startgame(String gameType, ArrayList<Athlete> athletes, Official official) {
+		Game game = null;
+		String gameID = gameType.charAt(0) + (gameNum < 10 ? "0" : "") + gameNum;
+		switch(gameType){
+		case SWIM:
+			game = new Swimming(gameID, gameType, athletes, official);
+		case CYCLE:
+			game = new Cycling(gameID, gameType, athletes, official);
+		case RUN:
+			game = new Running(gameID, gameType, athletes, official);
 		}
+		
+		
 
+		
+		gameNum++;
 	}
 
 	public ArrayList<Athlete> getAthleteList() {
@@ -144,6 +141,7 @@ public class Driver {
 	public ArrayList<Official> getOfficialList() {
 		return officialList;
 	}
+
 	public ArrayList<Participants> getParticipantsList() {
 		return participantsList;
 	}
