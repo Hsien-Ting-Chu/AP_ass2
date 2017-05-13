@@ -14,8 +14,7 @@ public abstract class Athlete extends Participants {
 		// TODO Auto-generated constructor stub
 	}
 
-	public abstract int compete();
-
+	public abstract int compete(String gameType);
 
 	public void addPoints(int points) {
 		this.points += points;

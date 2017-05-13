@@ -9,21 +9,23 @@ import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.*;
+
 import Model.*;
-import View.Ozlympic;
 
 public class Driver {
-	private ArrayList<Athlete> athletesList = new ArrayList<>();
+	private ArrayList<Athlete> athleteList = new ArrayList<>();
 	private ArrayList<Official> officialList = new ArrayList<>();
-	private ArrayList<Participants> participantsList = new ArrayList<>();
-
+	private ArrayList<Game> historyGames = new ArrayList<>();
+	private List<String> gameResult;
 	public static final String SWIM = "Swimming";
 	public static final String CYCLE = "Cycling";
 	public static final String RUN = "Running";
-	public int gameNum = 0;
+	private int gameNum = 0;
+	private Game game = null;
+	private Connection c = null;
 
 	public boolean dbconnection() {
-		Connection c = null;
+
 		try {
 			Class.forName("org.sqlite.JDBC");
 			c = DriverManager.getConnection("jdbc:sqlite:participants.db");
@@ -55,20 +57,15 @@ public class Driver {
 				int age = Integer.parseInt(items[3]);
 				String state = items[4];
 				if (type.equals("Cyclist")) {
-					athletesList.add(new Cyclist(ID, type, name, age, state));
-					participantsList.add(new Cyclist(ID, type, name, age, state));
+					athleteList.add(new Cyclist(ID, type, name, age, state));
 				} else if (type.equals("Swimmer")) {
-					athletesList.add(new Swimmer(ID, type, name, age, state));
-					participantsList.add(new Swimmer(ID, type, name, age, state));
+					athleteList.add(new Swimmer(ID, type, name, age, state));
 				} else if (type.equals("Sprinter")) {
-					athletesList.add(new Sprinter(ID, type, name, age, state));
-					participantsList.add(new Sprinter(ID, type, name, age, state));
+					athleteList.add(new Sprinter(ID, type, name, age, state));
 				} else if (type.equals("Super")) {
-					athletesList.add(new SuperAthlete(ID, type, name, age, state));
-					participantsList.add(new SuperAthlete(ID, type, name, age, state));
+					athleteList.add(new SuperAthlete(ID, type, name, age, state));
 				} else if (type.equals("Officer")) {
 					officialList.add(new Official(ID, type, name, age, state));
-					participantsList.add(new Official(ID, type, name, age, state));
 				}
 			}
 		} catch (FileNotFoundException e1) {
@@ -117,9 +114,8 @@ public class Driver {
 	}
 
 	public void startgame(String gameType, ArrayList<Athlete> athletes, Official official) {
-		Game game = null;
 		String gameID = gameType.charAt(0) + (gameNum < 10 ? "0" : "") + gameNum;
-		switch(gameType){
+		switch (gameType) {
 		case SWIM:
 			game = new Swimming(gameID, gameType, athletes, official);
 		case CYCLE:
@@ -127,23 +123,27 @@ public class Driver {
 		case RUN:
 			game = new Running(gameID, gameType, athletes, official);
 		}
-		
-		
-
-		
+		game.start();
+		historyGames.add(game);
+		printGameResult(game);
 		gameNum++;
 	}
 
 	public ArrayList<Athlete> getAthleteList() {
-		return athletesList;
+		return athleteList;
 	}
 
 	public ArrayList<Official> getOfficialList() {
 		return officialList;
 	}
 
-	public ArrayList<Participants> getParticipantsList() {
-		return participantsList;
+	private void printGameResult(Game game) {
+		String gameid = game.getID();
+		System.out.println(gameid);
+		gameResult = game.getPrintResult();
+		for (int i = 0; i < gameResult.size(); i++) {
+			System.out.println(gameResult.get(i));
+		}
 	}
 
 }

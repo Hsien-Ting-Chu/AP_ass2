@@ -1,11 +1,11 @@
 package Model;
 
-import java.util.Random;
-
 /**
  * @author Haifan Wang
  *
  */
+import java.util.Random;
+import Controller.Driver;
 
 public class SuperAthlete extends Athlete {
 
@@ -17,25 +17,24 @@ public class SuperAthlete extends Athlete {
 	private int range = 0;
 	private int start = 0;
 
-	public void getgameType(String gameType) {
+	
+
+	public int compete(String gameType) {
+
 		switch (gameType) {
-		case "Running":
+		case Driver.RUN:
 			range = 11;
 			start = 10;
 			break;
-		case "Swinmming":
+		case Driver.SWIM:
 			range = 101;
 			start = 100;
 			break;
-		case "Cycling":
+		case Driver.CYCLE:
 			range = 301;
 			start = 500;
 			break;
 		}
-
-	}
-
-	public int compete() {
 		int seconds;
 		Random r = new Random();
 		seconds = r.nextInt(range) + start;

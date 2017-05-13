@@ -96,7 +96,13 @@ public class Ozlympic extends Application {
 		Button btBacktoMain2 = new Button("Main Menu");
 		Button btShowAthletes = new Button("Show Athlete");
 		Button btStartGame = new Button("Start Game");
-		ArrayList<Participants> participantslList = driver.getParticipantsList();
+		ArrayList<Participants> participantsList1 = new ArrayList<>();
+		ArrayList<Participants> participantsList2 = new ArrayList<>();
+		ArrayList<Athlete> athletesList = driver.getAthleteList();
+		ArrayList<Official> officialList = driver.getOfficialList();
+		participantsList1.addAll(athletesList); participantsList1.addAll(officialList);
+		participantsList2.addAll(officialList); participantsList2.addAll(athletesList);
+		
 
 		// Items Settings -Size
 		Scene2HBox1.setPrefSize(850, 30);
@@ -127,11 +133,12 @@ public class Ozlympic extends Application {
 		// ObservableList<Athlete> AthleteObservableList = FXCollections.observableArrayList(athletesList);
 		// ObservableList<Official> OfficialObservableList = FXCollections.observableArrayList(officialList);
 		
-		ObservableList<Participants> ParticipantsObservableList = FXCollections.observableArrayList(participantslList);
+		ObservableList<Participants> ParticipantsObservableList1 = FXCollections.observableArrayList(participantsList1);
+		ObservableList<Participants> ParticipantsObservableList2 = FXCollections.observableArrayList(participantsList2);
 		// AthleteList.setItems(AthleteObservableList);
 		// OfficialList.setItems(OfficialObservableList);
-		ParticipantsList1.setItems(ParticipantsObservableList);
-		ParticipantsList2.setItems(ParticipantsObservableList);
+			ParticipantsList1.setItems(ParticipantsObservableList1);
+			ParticipantsList2.setItems(ParticipantsObservableList2);
 		ParticipantsList1.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 		
@@ -288,10 +295,11 @@ public class Ozlympic extends Application {
 				title2.setText("NoRefereeException");
 			} catch (WrongTypeException e1){
 				title2.setText("Wrong type exception");
-			} catch (Exception e2){
-				title2.setText("Please select a game type");
-			}	
-			
+			} 
+//			catch (Exception e2){
+//				title2.setText("Please select a game type");
+//			}	
+//			
 	
 			
 		});
@@ -325,7 +333,4 @@ public class Ozlympic extends Application {
 
 	}
 
-	public void MainScene1(){
-		
-	}
 }
