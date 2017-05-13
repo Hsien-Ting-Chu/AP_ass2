@@ -8,20 +8,19 @@ import java.util.Random;
 
 public class Sprinter extends Athlete {
 
-	private Game game;
 	public Sprinter(String ID, String type, String name, int age, String state) {
 		super(ID, type, name, age, state);
 
 	}
 
 	// Define range 10~20
-	final double range = 11.0;
-	final double start = 10.0;
+	final int range = 11;
+	final int start = 10;
 
-	public double compete(String gameType) {
-		double seconds;
+	public int compete(String gameType) {
+		int seconds;
 		Random r = new Random();
-		seconds = range+r.nextDouble() * start;
+		seconds = r.nextInt(range) + start;
 		return seconds;
 	}
 }

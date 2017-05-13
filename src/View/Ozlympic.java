@@ -22,7 +22,7 @@ import java.util.*;
 public class Ozlympic extends Application {
 	Driver driver;
 	Stage window;
-	Scene scene1, scene2, scene3, scene4;
+	Scene scene1, scene2, scene3, scene4, scene5;
 	private String gameType;
 	final int TooFewAthleteException = 4;
 	final int GameFullException = 8;
@@ -49,7 +49,7 @@ public class Ozlympic extends Application {
 		Button btNewGame = new Button("New Game");
 		Button btGameHistory = new Button("Game History");
 		Button btAthletePoints = new Button("Athlete Points");
-				
+		Button btExit = new Button("Exit");		
 		if(!driver.dbconnection()){
 			title1.setText("Can not find DataBase" );
 			title1.setFill(Color.RED);
@@ -66,6 +66,7 @@ public class Ozlympic extends Application {
 		btNewGame.setPrefSize(100, 50);
 		btGameHistory.setPrefSize(100, 50);
 		btAthletePoints.setPrefSize(100, 50);
+		btExit.setPrefSize(100, 50);
 		// Items Settings -Font
 		Scene1Vbox.setPadding(new Insets(4));
 		Scene1Vbox.setSpacing(10);
@@ -73,8 +74,8 @@ public class Ozlympic extends Application {
 		title1.setFont(Font.font("Arial", FontWeight.BOLD, 16));
 
 		// Items Adding
-		Scene1Vbox.getChildren().addAll(title1, btNewGame, btGameHistory, btAthletePoints);
-		scene1 = new Scene(Scene1Vbox, 300, 250);
+		Scene1Vbox.getChildren().addAll(title1, btNewGame, btGameHistory, btAthletePoints, btExit);
+		scene1 = new Scene(Scene1Vbox, 300, 300);
 		window.setTitle("Ozlympic Game");
 		window.setScene(scene1);
 		window.show();		
@@ -96,14 +97,13 @@ public class Ozlympic extends Application {
 		Button btBacktoMain2 = new Button("Main Menu");
 		Button btShowAthletes = new Button("Show Athlete");
 		Button btStartGame = new Button("Start Game");
-		ArrayList<Participants> participantsList1 = new ArrayList<>();
-		ArrayList<Participants> participantsList2 = new ArrayList<>();
+		ArrayList<Participants> participants1 = new ArrayList<>();
+		ArrayList<Participants> participants2 = new ArrayList<>();
 		ArrayList<Athlete> athletesList = driver.getAthleteList();
 		ArrayList<Official> officialList = driver.getOfficialList();
-		participantsList1.addAll(athletesList); participantsList1.addAll(officialList);
-		participantsList2.addAll(officialList); participantsList2.addAll(athletesList);
+		participants1.addAll(athletesList); participants1.addAll(officialList);
+		participants2.addAll(officialList); participants2.addAll(athletesList);
 		
-
 		// Items Settings -Size
 		Scene2HBox1.setPrefSize(850, 30);
 		gameLB.setPrefSize(150, 30);
@@ -123,22 +123,19 @@ public class Ozlympic extends Application {
 		athleteLB.setFont(Font.font("Arial", 14));
 		officialLB.setFont(Font.font("Arial", 14));
 
-// Items Settings - Layout
+		// Items Settings - Layout
 		Scene2HBox1.setLayoutY(30);
 		Scene2HBox2.setLayoutY(55);
 		btBacktoMain2.setLayoutX(650);	btBacktoMain2.setLayoutY(450);
 		btStartGame.setLayoutX(750); 	btStartGame.setLayoutY(450);
 		title2.setLayoutY(25);
 // Layout Settings
-		// ObservableList<Athlete> AthleteObservableList = FXCollections.observableArrayList(athletesList);
-		// ObservableList<Official> OfficialObservableList = FXCollections.observableArrayList(officialList);
-		
-		ObservableList<Participants> ParticipantsObservableList1 = FXCollections.observableArrayList(participantsList1);
-		ObservableList<Participants> ParticipantsObservableList2 = FXCollections.observableArrayList(participantsList2);
-		// AthleteList.setItems(AthleteObservableList);
-		// OfficialList.setItems(OfficialObservableList);
-			ParticipantsList1.setItems(ParticipantsObservableList1);
-			ParticipantsList2.setItems(ParticipantsObservableList2);
+
+		ObservableList<Participants> ParticipantsObservableList1 = FXCollections.observableArrayList(participants1);
+		ObservableList<Participants> ParticipantsObservableList2 = FXCollections.observableArrayList(participants2);
+
+		ParticipantsList1.setItems(ParticipantsObservableList1);
+		ParticipantsList2.setItems(ParticipantsObservableList2);
 		ParticipantsList1.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 		
@@ -151,51 +148,68 @@ public class Ozlympic extends Application {
 
 // Scene3
 		AnchorPane rootpane3 = new AnchorPane();
-		Button btBacktoMain3 = new Button("scene3");
-
-		rootpane3.getChildren().add(btBacktoMain3);
+		Button btBacktoMain3 = new Button("Main Screen");
+		
+		ListView<String> gameHistroyList = new ListView<>();
+		btBacktoMain3.setPrefSize(100, 50);
+		gameHistroyList.setPrefWidth(350);
+		btBacktoMain3.setLayoutX(400); 	btBacktoMain3.setLayoutY(450);
+		
+		
+		rootpane3.getChildren().addAll(gameHistroyList, btBacktoMain3);
 				
 // Scene4
 		AnchorPane rootpane4 = new AnchorPane();
-		Button btBacktoMain4 = new Button("scene4");
-		rootpane4.getChildren().add(btBacktoMain4);
-				
-
-// Action handler
+		Button btBacktoMain4 = new Button("Main Screen");
+		btBacktoMain4.setPrefSize(100, 50);
+		btBacktoMain4.setLayoutX(400); 	btBacktoMain4.setLayoutY(450);
+		
+		rootpane4.getChildren().addAll(btBacktoMain4);
+// Scene5				
+		AnchorPane rootpane5 = new AnchorPane();
+		Button btBacktoMain5 = new Button("Main Screen");
+		Button btBacktogame = new Button("New Game");
+		btBacktoMain5.setPrefSize(100, 50);
+		btBacktogame.setPrefSize(100, 50);
+		btBacktoMain5.setLayoutX(300); 	btBacktoMain5.setLayoutY(450);
+		btBacktogame.setLayoutX(400); 	btBacktogame.setLayoutY(450);
+		
+		rootpane5.getChildren().addAll(btBacktoMain5, btBacktogame);
+		
+//Action handler
 //Scene1
 		scene2 = new Scene(rootPane2, 850, 500);
 		scene3 = new Scene(rootpane3, 500, 500);
 		scene4 = new Scene(rootpane4, 500, 500);
+		scene5 = new Scene(rootpane5, 500, 500);
 		
-		btNewGame.setOnAction(e -> {
-			
+		btNewGame.setOnAction(e -> {			
 			window.setScene(scene2);
 			window.setTitle("Main Screen");
 
-		});
-		
-		btGameHistory.setOnAction(e -> { 
+		});		
+		btGameHistory.setOnAction(e -> {
+			ArrayList<String> gameHistory = driver.getgamesHistory();
+			ObservableList<String> gameHistroyObservableList = FXCollections.observableArrayList(gameHistory);
+			gameHistroyList.setItems(gameHistroyObservableList);
+			
+			
+			
 			
 			window.setTitle("Game History");
-			window.setScene(scene3);
-
-			
+			window.setScene(scene3);		
 		});
-		btAthletePoints.setOnAction(e -> {
-			
+		btAthletePoints.setOnAction(e -> {			
 			window.setTitle("Athlete Points");
-			window.setScene(scene4);
-	
-			
-			
-		});
-		
-		
+			window.setScene(scene4);			
+		});	
+		btExit.setOnAction(e -> {			
+			window.close();		
+		});	
 //Scene2
 		//Multiple select ListView
 		MultipleSelectionModel<Participants> selectionModel = ParticipantsList1.getSelectionModel();
 		selectionModel.clearSelection();
-		
 		ParticipantsList1.setCellFactory(lv -> {
 			ListCell<Participants> cell = new ListCell<Participants>() {
 				@Override
@@ -218,17 +232,15 @@ public class Ozlympic extends Application {
 						selectionModel.select(index);
 					}
 					event.consume();
-				}
+					}
 			});
 			return cell;
 		});
-		
 		//Back to Main
 		btBacktoMain2.setOnAction(e -> {
 			window.setTitle("Ozlympic Game");
 			window.setScene(scene1);
-			
-			
+
 		});
 
 		//Start Game 
@@ -237,13 +249,7 @@ public class Ozlympic extends Application {
 		            String new_val) -> {
 		            gameType=new_val;
 		    });
-		
-//		ParticipantsList2.getSelectionModel().selectedItemProperty().addListener(
-//		        (ObservableValue<? extends Participants> ov, Participants old_val, 
-//		        	Participants new_val) -> {
-//		            official=(Official)new_val;
-//		    });
-		
+			
 		btStartGame.setOnAction(e -> {
 			ArrayList<Athlete> SelectedAthlete = new ArrayList<>();
 			Official SelectedOfficial = null;
@@ -286,7 +292,8 @@ public class Ozlympic extends Application {
 				else if (SelectedOfficial == null)
 					throw new NoRefereeException();
 				driver.startgame(gameType, SelectedAthlete, SelectedOfficial);
-				
+				window.setTitle("Game Result");
+				window.setScene(scene5);
 			} catch (TooFewAthleteException e1) {
 				title2.setText("TooFewAthleteException");
 			} catch (GameFullException e2) {
@@ -295,13 +302,9 @@ public class Ozlympic extends Application {
 				title2.setText("NoRefereeException");
 			} catch (WrongTypeException e1){
 				title2.setText("Wrong type exception");
-			} 
-//			catch (Exception e2){
-//				title2.setText("Please select a game type");
-//			}	
-//			
-	
-			
+			} catch (Exception e2){
+				title2.setText("Please select a game type");
+			}				
 		});
 //Scene3
 		//Back to Main
@@ -327,8 +330,18 @@ public class Ozlympic extends Application {
 			
 		});
 		
-		
-		
+//Scene5 		
+		//Back to Scene2
+		btBacktoMain5.setOnAction(e -> {
+			window.setTitle("Ozlympic Game");
+			window.setScene(scene1);
+					
+		});		
+		btBacktogame.setOnAction(e -> {
+			window.setTitle("New Game");
+			window.setScene(scene2);
+					
+		});		
 
 
 	}

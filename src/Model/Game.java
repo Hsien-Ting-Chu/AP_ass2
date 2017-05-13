@@ -6,7 +6,6 @@ package Model;
  */
 import java.util.ArrayList;
 import java.util.List;
-import Controller.Driver;
 
 public abstract class Game {
 	private String ID;
@@ -23,14 +22,16 @@ public abstract class Game {
 		
 	}
 	public void start(){		
+		referee.initNewGame();
 		// Call each athlete in athletes list to start the game
 		for(Athlete athlete : athletes){
-			double result = athlete.compete(type);
+			int result = athlete.compete(type);
 			referee.rank(athlete, result);
 		}
 		// To summarise score of top3 winner
 		referee.summarise();
 		resultList = referee.getResult();
+
 	}
 	
 	public List<String> getPrintResult() {
