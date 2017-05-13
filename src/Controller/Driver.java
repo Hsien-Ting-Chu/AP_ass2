@@ -16,10 +16,12 @@ import Model.*;
 public class Driver {
 	private ArrayList<Athlete> athleteList = new ArrayList<>();
 	private ArrayList<Official> officialList = new ArrayList<>();
-	private ArrayList<String> gamesHistory = new ArrayList<>();
+	private ArrayList<String> result;
+	private ArrayList<String> gamesHistory;
+	private ArrayList<String> athletePoint;
 	private List<String> gameResult;
-	private List<String> printResult;
 	private List<Integer> scoreList;
+	private Set<String> itemSet = new TreeSet<>();
 	public static final String SWIM = "Swimming";
 	public static final String CYCLE = "Cycling";
 	public static final String RUN = "Running";
@@ -50,31 +52,8 @@ public class Driver {
 			writer.close();
 			br = new BufferedReader(new FileReader("participants.txt"));
 			String line;
-			Set<String> itemSet = new TreeSet<>();
 			while ((line = br.readLine()) != null) {
 				itemSet.add(line);
-			}
-			for (String s : itemSet) {
-				String[] items = s.split(",\\s*");
-				if (!validData(items)) {
-					continue;
-				}
-				String ID = items[0];
-				String type = items[1];
-				String name = items[2];
-				int age = Integer.parseInt(items[3]);
-				String state = items[4];
-				if (type.equals("Cyclist")) {
-					athleteList.add(new Cyclist(ID, type, name, age, state));
-				} else if (type.equals("Swimmer")) {
-					athleteList.add(new Swimmer(ID, type, name, age, state));
-				} else if (type.equals("Sprinter")) {
-					athleteList.add(new Sprinter(ID, type, name, age, state));
-				} else if (type.equals("Super")) {
-					athleteList.add(new SuperAthlete(ID, type, name, age, state));
-				} else if (type.equals("Officer")) {
-					officialList.add(new Official(ID, type, name, age, state));
-				}
 			}
 		} catch (FileNotFoundException e1) {
 			e1.getMessage();
@@ -91,6 +70,31 @@ public class Driver {
 			}
 		}
 		return true;
+	}
+
+	public void initialisation() {
+		for (String s : itemSet) {
+			String[] items = s.split(",\\s*");
+			if (!validData(items)) {
+				continue;
+			}
+			String ID = items[0];
+			String type = items[1];
+			String name = items[2];
+			int age = Integer.parseInt(items[3]);
+			String state = items[4];
+			if (type.equals("Cyclist")) {
+				athleteList.add(new Cyclist(ID, type, name, age, state));
+			} else if (type.equals("Swimmer")) {
+				athleteList.add(new Swimmer(ID, type, name, age, state));
+			} else if (type.equals("Sprinter")) {
+				athleteList.add(new Sprinter(ID, type, name, age, state));
+			} else if (type.equals("Super")) {
+				athleteList.add(new SuperAthlete(ID, type, name, age, state));
+			} else if (type.equals("Officer")) {
+				officialList.add(new Official(ID, type, name, age, state));
+			}
+		}
 	}
 
 	public boolean validData(String[] data) {
@@ -112,13 +116,13 @@ public class Driver {
 			game = new Running(gameID, gameType, athletes, official);
 		}
 		game.start();
-
 		printGameResult(game, official);
 		printgameHistory();
 		gameNum++;
 	}
 
 	private void printGameResult(Game game, Official official) {
+		result = new ArrayList<>();
 		String gameid = game.getID();
 		Calendar cal = Calendar.getInstance();
 		DateFormat dateFromat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS");
@@ -132,16 +136,16 @@ public class Driver {
 			out = new PrintWriter(bw);
 			for (int i = 0; i < gameResult.size(); i++) {
 				if (i == 0) {
-					System.out.println(gameid + " ," + gameResult.get(i) + " ," + dateFromat.format(cal.getTime()));
+					result.add(gameid + " ," + gameResult.get(i) + " ," + dateFromat.format(cal.getTime()));
 					out.println(gameid + " ," + gameResult.get(i) + " ," + dateFromat.format(cal.getTime()));
 				} else if (i == 1) {
-					System.out.println(gameResult.get(i) + " ," + scoreList.get(i) + " , 5");
+					result.add(gameResult.get(i) + " ," + scoreList.get(i) + " , 5");
 					out.println(gameResult.get(i) + " ," + scoreList.get(i) + " , 5");
 				} else if (i == 2) {
-					System.out.println(gameResult.get(i) + " ," + scoreList.get(i) + " , 2");
+					result.add(gameResult.get(i) + " ," + scoreList.get(i) + " , 2");
 					out.println(gameResult.get(i) + " ," + scoreList.get(i) + " , 2");
 				} else if (i == 3) {
-					System.out.println(gameResult.get(i) + " ," + scoreList.get(i) + " , 1");
+					result.add(gameResult.get(i) + " ," + scoreList.get(i) + " , 1");
 					out.println(gameResult.get(i) + " ," + scoreList.get(i) + " , 1");
 				}
 			}
@@ -167,8 +171,8 @@ public class Driver {
 
 	}
 
-	private List<Athlete> sortAthletes(List<Athlete> athelets) {
-		List<Athlete> sortList = new ArrayList<Athlete>(athelets);
+	private List<Athlete> sortAthletes(List<Athlete> athletes) {
+		List<Athlete> sortList = new ArrayList<Athlete>(athletes);
 		Collections.sort(sortList, new Comparator<Athlete>() {
 			@Override
 			public int compare(Athlete a1, Athlete a2) {
@@ -178,7 +182,20 @@ public class Driver {
 		return sortList;
 	}
 
+	public void printSortAthelets() {
+		athletePoint = new ArrayList<>();
+		List<Athlete> sortList = sortAthletes(athleteList);
+		for (int i = 0; i < sortList.size(); i++) {
+			printAthelet(sortList.get(i));
+		}
+	}
+
+	private void printAthelet(Athlete athlete) {
+		athletePoint.add("Points: " + athlete.getPoints() + ", " + athlete.toString());
+	}
+
 	private void printgameHistory() {
+		gamesHistory = new ArrayList<>();
 		BufferedReader reader = null;
 		try {
 			reader = new BufferedReader(new FileReader("gameResults.txt"));
@@ -206,9 +223,15 @@ public class Driver {
 	public ArrayList<Official> getOfficialList() {
 		return officialList;
 	}
+	public ArrayList<String> getresult() {
+		return result;
+	}
 
 	public ArrayList<String> getgamesHistory() {
 		return gamesHistory;
 	}
 
+	public ArrayList<String> getathletePoint() {
+		return athletePoint;
+	}
 }

@@ -30,7 +30,7 @@ public class Official extends Participants {
 	
 	public void rank(Athlete athlete, int result) {
 		for (int i = 0; i < scoreList.size(); i++) {
-			if (scoreList.get(i) > result) {
+			if (scoreList.get(i) < result) {
 				continue;
 			} else {
 				resultList.add(i, athlete);

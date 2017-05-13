@@ -23,6 +23,8 @@ public class Ozlympic extends Application {
 	Driver driver;
 	Stage window;
 	Scene scene1, scene2, scene3, scene4, scene5;
+	ArrayList<Athlete> SelectedAthlete = new ArrayList<>();
+	Official SelectedOfficial = null;
 	private String gameType;
 	final int TooFewAthleteException = 4;
 	final int GameFullException = 8;
@@ -39,6 +41,7 @@ public class Ozlympic extends Application {
 		driver = new Driver();
 		driver.dbconnection();
 		driver.readFile();
+		driver.initialisation();
 		window = primaryStage;
 
 // Scene 1
@@ -149,7 +152,6 @@ public class Ozlympic extends Application {
 // Scene3
 		AnchorPane rootpane3 = new AnchorPane();
 		Button btBacktoMain3 = new Button("Main Screen");
-		
 		ListView<String> gameHistroyList = new ListView<>();
 		btBacktoMain3.setPrefSize(100, 50);
 		gameHistroyList.setPrefWidth(350);
@@ -161,20 +163,27 @@ public class Ozlympic extends Application {
 // Scene4
 		AnchorPane rootpane4 = new AnchorPane();
 		Button btBacktoMain4 = new Button("Main Screen");
+		ListView<String> athletePointList = new ListView<>();
+		
 		btBacktoMain4.setPrefSize(100, 50);
+		athletePointList.setPrefWidth(350);
 		btBacktoMain4.setLayoutX(400); 	btBacktoMain4.setLayoutY(450);
 		
-		rootpane4.getChildren().addAll(btBacktoMain4);
+		rootpane4.getChildren().addAll(athletePointList, btBacktoMain4);
 // Scene5				
 		AnchorPane rootpane5 = new AnchorPane();
 		Button btBacktoMain5 = new Button("Main Screen");
 		Button btBacktogame = new Button("New Game");
+		ListView<String> resultList = new ListView<>();
+		
 		btBacktoMain5.setPrefSize(100, 50);
 		btBacktogame.setPrefSize(100, 50);
+		resultList.setPrefWidth(350);
+		
 		btBacktoMain5.setLayoutX(300); 	btBacktoMain5.setLayoutY(450);
 		btBacktogame.setLayoutX(400); 	btBacktogame.setLayoutY(450);
 		
-		rootpane5.getChildren().addAll(btBacktoMain5, btBacktogame);
+		rootpane5.getChildren().addAll(resultList, btBacktoMain5, btBacktogame);
 		
 //Action handler
 //Scene1
@@ -188,24 +197,28 @@ public class Ozlympic extends Application {
 			window.setTitle("Main Screen");
 
 		});		
+		
 		btGameHistory.setOnAction(e -> {
 			ArrayList<String> gameHistory = driver.getgamesHistory();
 			ObservableList<String> gameHistroyObservableList = FXCollections.observableArrayList(gameHistory);
 			gameHistroyList.setItems(gameHistroyObservableList);
-			
-			
-			
-			
 			window.setTitle("Game History");
 			window.setScene(scene3);		
 		});
-		btAthletePoints.setOnAction(e -> {			
+		
+		btAthletePoints.setOnAction(e -> {
+			driver.printSortAthelets();
+			ArrayList<String> athletePoint = driver.getathletePoint();
+			ObservableList<String> athletePointObservableList = FXCollections.observableArrayList(athletePoint);
+			athletePointList.setItems(athletePointObservableList);
 			window.setTitle("Athlete Points");
 			window.setScene(scene4);			
 		});	
+		
 		btExit.setOnAction(e -> {			
 			window.close();		
 		});	
+		
 //Scene2
 		//Multiple select ListView
 		MultipleSelectionModel<Participants> selectionModel = ParticipantsList1.getSelectionModel();
@@ -251,8 +264,7 @@ public class Ozlympic extends Application {
 		    });
 			
 		btStartGame.setOnAction(e -> {
-			ArrayList<Athlete> SelectedAthlete = new ArrayList<>();
-			Official SelectedOfficial = null;
+			
 			ObservableList<Participants> OBSelectedAthlete = ParticipantsList1.getSelectionModel().getSelectedItems();
 			ObservableList<Participants> OBSelectedOfficial = ParticipantsList2.getSelectionModel().getSelectedItems();
 			try {
@@ -291,9 +303,7 @@ public class Ozlympic extends Application {
 					throw new GameFullException();
 				else if (SelectedOfficial == null)
 					throw new NoRefereeException();
-				driver.startgame(gameType, SelectedAthlete, SelectedOfficial);
-				window.setTitle("Game Result");
-				window.setScene(scene5);
+				
 			} catch (TooFewAthleteException e1) {
 				title2.setText("TooFewAthleteException");
 			} catch (GameFullException e2) {
@@ -305,6 +315,14 @@ public class Ozlympic extends Application {
 			} catch (Exception e2){
 				title2.setText("Please select a game type");
 			}				
+			
+			driver.startgame(gameType, SelectedAthlete, SelectedOfficial);
+			window.setTitle("Game Result");
+			window.setScene(scene5);
+			
+			ArrayList<String> result = driver.getresult();
+			ObservableList<String> resultObservableList = FXCollections.observableArrayList(result);
+			resultList.setItems(resultObservableList);
 		});
 //Scene3
 		//Back to Main
@@ -312,15 +330,7 @@ public class Ozlympic extends Application {
 			window.setTitle("Ozlympic Game");
 			window.setScene(scene1);
 			
-		});
-		
-		
-		
-		
-		
-		
-		
-		
+		});	
 		
 //Scene4		
 		//Back to Main
