@@ -25,7 +25,7 @@ public abstract class Game {
 	public void start(){		
 		// Call each athlete in athletes list to start the game
 		for(Athlete athlete : athletes){
-			int result = athlete.compete(type);
+			double result = athlete.compete(type);
 			referee.rank(athlete, result);
 		}
 		// To summarise score of top3 winner

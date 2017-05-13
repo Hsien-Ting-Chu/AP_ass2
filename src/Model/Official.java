@@ -11,14 +11,14 @@ import java.util.List;
 public class Official extends Participants {
 
 	ArrayList<Athlete> resultList = new ArrayList<>();
-	ArrayList<Integer> scoreList = new ArrayList<>();
+	ArrayList<Double> scoreList = new ArrayList<>();
 
 	public Official(String ID, String type, String name, int age, String state) {
 		super(ID, type, name, age, state);
 		// TODO Auto-generated constructor stub
 	}
 
-	public void rank(Athlete athlete, int result) {
+	public void rank(Athlete athlete, double result) {
 		for (int i = 0; i < scoreList.size(); i++) {
 			if (scoreList.get(i) > result) {
 				continue;

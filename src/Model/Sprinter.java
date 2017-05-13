@@ -15,13 +15,13 @@ public class Sprinter extends Athlete {
 	}
 
 	// Define range 10~20
-	final int range = 11;
-	final int start = 10;
+	final double range = 11.0;
+	final double start = 10.0;
 
-	public int compete(String gameType) {
-		int seconds;
+	public double compete(String gameType) {
+		double seconds;
 		Random r = new Random();
-		seconds = r.nextInt(range) + start;
+		seconds = range+r.nextDouble() * start;
 		return seconds;
 	}
 }

@@ -18,7 +18,7 @@ public class Swimmer extends Athlete {
 	final int start = 100;
 
 	// implement compete
-	public int compete(String gameType) {
+	public double compete(String gameType) {
 		int seconds;
 		Random r = new Random();
 		seconds = r.nextInt(range) + start;
