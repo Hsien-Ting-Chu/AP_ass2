@@ -8,6 +8,7 @@ import java.io.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.*;
@@ -28,6 +29,7 @@ public class Driver {
 	public static final String CYCLE = "Cycling";
 	public static final String RUN = "Running";
 	private int gameNum = 0;
+	private String gameid;
 	private Game game = null;
 
 	public boolean DBCheck() {
@@ -53,11 +55,13 @@ public class Driver {
 			readFromTxt();
 	}
 
-	public void readFromDB() {
+	private void readFromDB() {
 		try {
+			FileOutputStream writer = new FileOutputStream("gameResults.txt");
+			writer.write(("").getBytes());
+			writer.close();
 			Class.forName("org.sqlite.JDBC");
 			Connection participants = DriverManager.getConnection("jdbc:sqlite:participants.db");
-			Connection gameResults = DriverManager.getConnection("jdbc:sqlite:gameResults.db");
 			Statement stmt = participants.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM participants;");
 			int columnCount = rs.getMetaData().getColumnCount();
@@ -76,7 +80,7 @@ public class Driver {
 		}
 	}
 
-	public void readFromTxt() {
+	private void readFromTxt() {
 		BufferedReader br = null;
 		try {
 			FileOutputStream writer = new FileOutputStream("gameResults.txt");
@@ -102,6 +106,7 @@ public class Driver {
 	}
 
 	public void initialisation() {
+		createDB();
 		for (String s : itemSet) {
 			String[] items = s.split(",\\s*");
 			if (!validData(items)) {
@@ -134,6 +139,23 @@ public class Driver {
 		return true;
 	}
 
+	private void createDB() {
+		String drop = "Drop table if exists result";
+		String sql = " Create table result(" + "GameID text," + "OfficialID text," + "AthleteID text,"
+				+ "Result integer," + "Score integer" + ");";
+
+		try {
+			Class.forName("org.sqlite.JDBC");
+			Connection gameResults = DriverManager.getConnection("jdbc:sqlite:gameResults.db");
+			Statement stmt = gameResults.createStatement();
+			stmt.execute(drop);
+			stmt.execute(sql);
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+		}
+
+	}
+
 	public void startgame(String gameType, ArrayList<Athlete> athletes, Official official) {
 		String gameID = gameType.charAt(0) + (gameNum < 10 ? "0" : "") + gameNum;
 		switch (gameType) {
@@ -144,20 +166,21 @@ public class Driver {
 		case RUN:
 			game = new Running(gameID, gameType, athletes, official);
 		}
+
 		game.start();
 		printGameResult(game, official);
+		gameResultDB();
 		printgameHistory();
 		gameNum++;
 	}
 
 	private void printGameResult(Game game, Official official) {
 		result = new ArrayList<>();
-		String gameid = game.getID();
+		gameid = game.getID();
 		Calendar cal = Calendar.getInstance();
 		DateFormat dateFromat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS");
 		gameResult = game.getPrintResult();
 		scoreList = official.getscoreList();
-
 		BufferedWriter bw = null;
 		PrintWriter out = null;
 		try {
@@ -178,7 +201,6 @@ public class Driver {
 					out.println(gameResult.get(i) + " ," + scoreList.get(i) + " , 1");
 				}
 			}
-
 		} catch (FileNotFoundException e1) {
 			e1.getMessage();
 		} catch (IOException e2) {
@@ -196,6 +218,26 @@ public class Driver {
 			} catch (Exception e4) {
 				throw new RuntimeException("Fail to Close File ");
 			}
+		}
+
+	}
+
+	private void gameResultDB() {
+		Integer[] rank = {0,5,2,1};
+		try {
+			Class.forName("org.sqlite.JDBC");
+			Connection gameResults = DriverManager.getConnection("jdbc:sqlite:gameResults.db");
+			for (int i = 1; i < gameResult.size(); i++) {
+				PreparedStatement pstmt = gameResults.prepareStatement("insert into result values(?,?,?,?,?)");
+				pstmt.setString(1, gameid);
+				pstmt.setString(2, gameResult.get(0));
+				pstmt.setString(3, gameResult.get(i));
+				pstmt.setInt(4, scoreList.get(i));
+				pstmt.setInt(5, rank[i]);
+				pstmt.executeUpdate();
+			}
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		}
 
 	}
