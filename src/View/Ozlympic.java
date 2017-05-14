@@ -39,8 +39,9 @@ public class Ozlympic extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		driver = new Driver();
-		driver.dbconnection();
-		driver.readFile();
+		driver.DBCheck();
+		driver.txtCheck();
+		driver.readData();
 		driver.initialisation();
 		window = primaryStage;
 
@@ -53,10 +54,10 @@ public class Ozlympic extends Application {
 		Button btGameHistory = new Button("Game History");
 		Button btAthletePoints = new Button("Athlete Points");
 		Button btExit = new Button("Exit");		
-		if(!driver.dbconnection()){
+		if(!driver.DBCheck()){
 			title1.setText("Can not find DataBase" );
 			title1.setFill(Color.RED);
-			if(!driver.readFile()){
+			if(!driver.txtCheck()){
 				title1.setText("Can not find Database and participants.txt");
 				title1.setFill(Color.RED);
 			}
@@ -166,7 +167,7 @@ public class Ozlympic extends Application {
 		ListView<String> athletePointList = new ListView<>();
 		
 		btBacktoMain4.setPrefSize(100, 50);
-		athletePointList.setPrefWidth(350);
+		athletePointList.setPrefWidth(400);
 		btBacktoMain4.setLayoutX(400); 	btBacktoMain4.setLayoutY(450);
 		
 		rootpane4.getChildren().addAll(athletePointList, btBacktoMain4);
@@ -268,6 +269,8 @@ public class Ozlympic extends Application {
 			ObservableList<Participants> OBSelectedAthlete = ParticipantsList1.getSelectionModel().getSelectedItems();
 			ObservableList<Participants> OBSelectedOfficial = ParticipantsList2.getSelectionModel().getSelectedItems();
 			try {
+				SelectedAthlete = new ArrayList<>();
+				SelectedOfficial = null;
 				for(Participants athlete : OBSelectedAthlete){
 					switch(gameType){
 					case Driver.SWIM:
@@ -304,6 +307,14 @@ public class Ozlympic extends Application {
 				else if (SelectedOfficial == null)
 					throw new NoRefereeException();
 				
+				
+				driver.startgame(gameType, SelectedAthlete, SelectedOfficial);
+				window.setTitle("Game Result");
+				window.setScene(scene5);
+				gameList.getSelectionModel().clearSelection();
+				ParticipantsList1.getSelectionModel().clearSelection();
+				ParticipantsList2.getSelectionModel().clearSelection();
+				
 			} catch (TooFewAthleteException e1) {
 				title2.setText("TooFewAthleteException");
 			} catch (GameFullException e2) {
@@ -316,9 +327,8 @@ public class Ozlympic extends Application {
 				title2.setText("Please select a game type");
 			}				
 			
-			driver.startgame(gameType, SelectedAthlete, SelectedOfficial);
-			window.setTitle("Game Result");
-			window.setScene(scene5);
+
+	
 			
 			ArrayList<String> result = driver.getresult();
 			ObservableList<String> resultObservableList = FXCollections.observableArrayList(result);

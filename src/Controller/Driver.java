@@ -8,6 +8,8 @@ import java.io.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -16,8 +18,8 @@ import Model.*;
 public class Driver {
 	private ArrayList<Athlete> athleteList = new ArrayList<>();
 	private ArrayList<Official> officialList = new ArrayList<>();
-	private ArrayList<String> result;
-	private ArrayList<String> gamesHistory;
+	private ArrayList<String> result = new ArrayList<>();
+	private ArrayList<String> gamesHistory = new ArrayList<>();
 	private ArrayList<String> athletePoint;
 	private List<String> gameResult;
 	private List<Integer> scoreList;
@@ -27,24 +29,54 @@ public class Driver {
 	public static final String RUN = "Running";
 	private int gameNum = 0;
 	private Game game = null;
-	private Connection participants = null;
-	private Connection gameResults = null;
 
-	public boolean dbconnection() {
-
-		try {
-			Class.forName("org.sqlite.JDBC");
-			participants = DriverManager.getConnection("jdbc:sqlite:participants.db");
-			gameResults = DriverManager.getConnection("jdbc:sqlite:participants.db");
-		} catch (Exception e) {
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
-			System.exit(0);
+	public boolean DBCheck() {
+		File participants = new File("participants.db");
+		if (participants.exists()) {
+			return true;
+		} else
 			return false;
-		}
-		return true;
 	}
 
-	public boolean readFile() {
+	public boolean txtCheck() {
+		File participants = new File("participants.txt");
+		if (participants.exists()) {
+			return true;
+		} else
+			return false;
+	}
+
+	public void readData() {
+		if (DBCheck())
+			readFromDB();
+		else
+			readFromTxt();
+	}
+
+	public void readFromDB() {
+		try {
+			Class.forName("org.sqlite.JDBC");
+			Connection participants = DriverManager.getConnection("jdbc:sqlite:participants.db");
+			Connection gameResults = DriverManager.getConnection("jdbc:sqlite:gameResults.db");
+			Statement stmt = participants.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM participants;");
+			int columnCount = rs.getMetaData().getColumnCount();
+			while (rs.next()) {
+				String line = "";
+				for (int i = 1; i <= columnCount; i++) {
+					if (i < columnCount)
+						line += rs.getString(i) + ", ";
+					else
+						line += rs.getString(i);
+				}
+				itemSet.add(line);
+			}
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+		}
+	}
+
+	public void readFromTxt() {
 		BufferedReader br = null;
 		try {
 			FileOutputStream writer = new FileOutputStream("gameResults.txt");
@@ -57,10 +89,8 @@ public class Driver {
 			}
 		} catch (FileNotFoundException e1) {
 			e1.getMessage();
-			return false;
 		} catch (IOException e2) {
 			e2.printStackTrace();
-			return false;
 		} finally {
 			try {
 				if (br != null)
@@ -69,7 +99,6 @@ public class Driver {
 				throw new RuntimeException("Fail to Close File ");
 			}
 		}
-		return true;
 	}
 
 	public void initialisation() {
@@ -99,7 +128,7 @@ public class Driver {
 
 	public boolean validData(String[] data) {
 		for (String s : data) {
-			if ("".equals(s))
+			if ("".equals(s) || "null".equals(s))
 				return false;
 		}
 		return true;
@@ -223,6 +252,7 @@ public class Driver {
 	public ArrayList<Official> getOfficialList() {
 		return officialList;
 	}
+
 	public ArrayList<String> getresult() {
 		return result;
 	}

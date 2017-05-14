@@ -48,6 +48,6 @@ oz1006, Officer, Max, 48, SA
 oz1007, Officer, Dan, 51, WA
 oz1008, Officer, Jasper, 53, VIC
 oz1009, Officer, Amber, 43, NSW
-oz1009, , NOID, 43, NOID
+, Officer, Amber, 43, NSW
 oz1009, Officer, Amber, 43, NSW
-oz1009,  , NOTYPE, 43, NOTYPE
+oz1009, , Amber, 43, NSW
