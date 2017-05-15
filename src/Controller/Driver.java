@@ -15,6 +15,8 @@ import java.util.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import Model.*;
+import View.*;
+import javafx.stage.Stage;
 
 public class Driver {
 	private ArrayList<Athlete> athleteList = new ArrayList<>();
@@ -32,6 +34,12 @@ public class Driver {
 	private String gameid;
 	private Game game = null;
 
+	private Stage window ;
+	
+	public Driver(Stage primaryStage){
+		window = primaryStage;
+	}
+	
 	public boolean DBCheck() {
 		File participants = new File("participants.db");
 		if (participants.exists()) {
@@ -306,4 +314,56 @@ public class Driver {
 	public ArrayList<String> getathletePoint() {
 		return athletePoint;
 	}
+	
+	// View Controller
+	
+	public void newGame(){
+		NewGame newGame = new NewGame(this);
+		window.setScene(newGame.getScene());
+		window.setTitle(newGame.getTitle());
+	}
+
+	public void gameHistory(){
+		ArrayList<String> history = getgamesHistory();
+		GameHistory gameHistory = new GameHistory(this, history);
+		window.setTitle(gameHistory.getTitle());
+		window.setScene(gameHistory.getScene());
+	}
+
+	public void athletePoints(){
+		printSortAthelets();
+		ArrayList<String> points = getathletePoint();
+		AthletePoints athletePoints = new AthletePoints(this, points);
+		window.setTitle(athletePoints.getTitle());
+		window.setScene(athletePoints.getScene());
+	}
+
+	public void result(String gameType, ArrayList<Athlete> athletes, Official official){
+		startgame(gameType, athletes, official);
+		ArrayList<String> result = getresult();
+		Result resultScene = new Result(this, result);
+		window.setTitle(resultScene.getTitle());
+		window.setScene(resultScene.getScene());
+	}
+
+	public void mainPage(){
+		MainScene mainScene = new MainScene(this);
+		window.setTitle(mainScene.getTitle());
+		window.setScene(mainScene.getScene());
+	}
+
+	public void exit(){
+		window.close();
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

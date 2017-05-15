@@ -10,8 +10,8 @@ import java.util.List;
 
 public class Official extends Participants {
 
-	ArrayList<Athlete> resultList = new ArrayList<>();
-	ArrayList<Integer> scoreList = new ArrayList<>();
+	ArrayList<Athlete> resultList ;
+	ArrayList<Integer> scoreList ;
 	final int firstrank = 1;
 	final int secondrank = 2;
 	final int thirdrank = 3;
