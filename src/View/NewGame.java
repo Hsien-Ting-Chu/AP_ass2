@@ -1,5 +1,8 @@
 package View;
-
+/**
+ * @author Hsienting Chu
+ *
+ */
 import java.util.ArrayList;
 
 import Controller.Driver;
@@ -176,11 +179,13 @@ public class NewGame {
 				}
 				if (SelectedAthlete.size() <= TooFewAthleteException)
 					throw new TooFewAthleteException();
-				else if (SelectedAthlete.size() >= GameFullException)
+				else if (SelectedAthlete.size() > GameFullException)
 					throw new GameFullException();
 				else if (SelectedOfficial == null)
 					throw new NoRefereeException();
-
+				
+				driver.result(gameType, SelectedAthlete, SelectedOfficial);
+				
 			} catch (TooFewAthleteException e1) {
 				title2.setText("TooFewAthleteException");
 			} catch (GameFullException e2) {
@@ -193,7 +198,7 @@ public class NewGame {
 				title2.setText("Please select a game type");
 			}				
 			
-			driver.result(gameType, SelectedAthlete, SelectedOfficial);
+			
 		});
     }
 

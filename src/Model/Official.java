@@ -10,8 +10,8 @@ import java.util.List;
 
 public class Official extends Participants {
 
-	ArrayList<Athlete> resultList ;
-	ArrayList<Integer> scoreList ;
+	ArrayList<Athlete> resultList;
+	ArrayList<Integer> scoreList;
 	final int firstrank = 1;
 	final int secondrank = 2;
 	final int thirdrank = 3;
@@ -23,11 +23,12 @@ public class Official extends Participants {
 		super(ID, type, name, age, state);
 		// TODO Auto-generated constructor stub
 	}
-	public void initNewGame(){
+
+	public void initNewGame() {
 		resultList = new ArrayList<>();
 		scoreList = new ArrayList<>();
 	}
-	
+
 	public void rank(Athlete athlete, int result) {
 		for (int i = 0; i < scoreList.size(); i++) {
 			if (scoreList.get(i) < result) {
@@ -47,6 +48,7 @@ public class Official extends Participants {
 	public void summarise() {
 		for (int rank = 1; rank <= 3; rank++) {
 			Athlete athlete = resultList.get(rank);
+
 			switch (rank) {
 			case firstrank:
 				athlete.addPoints(firstpoint);

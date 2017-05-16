@@ -26,20 +26,21 @@ public class Driver {
 	private ArrayList<String> athletePoint;
 	private List<String> gameResult;
 	private List<Integer> scoreList;
+	private List<Athlete> sortedList = new ArrayList<>();
 	private Set<String> itemSet = new TreeSet<>();
 	public static final String SWIM = "Swimming";
 	public static final String CYCLE = "Cycling";
 	public static final String RUN = "Running";
 	private int gameNum = 0;
-	private String gameid;
+	private String gameID = "";
 	private Game game = null;
 
-	private Stage window ;
-	
-	public Driver(Stage primaryStage){
+	private Stage window;
+
+	public Driver(Stage primaryStage) {
 		window = primaryStage;
 	}
-	
+
 	public boolean DBCheck() {
 		File participants = new File("participants.db");
 		if (participants.exists()) {
@@ -84,7 +85,7 @@ public class Driver {
 				itemSet.add(line);
 			}
 		} catch (Exception e) {
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -159,13 +160,13 @@ public class Driver {
 			stmt.execute(drop);
 			stmt.execute(sql);
 		} catch (Exception e) {
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			System.err.println(e.getStackTrace());
 		}
 
 	}
 
 	public void startgame(String gameType, ArrayList<Athlete> athletes, Official official) {
-		String gameID = gameType.charAt(0) + (gameNum < 10 ? "0" : "") + gameNum;
+		gameID = gameType.charAt(0) + (gameNum < 10 ? "0" : "") + gameNum;
 		switch (gameType) {
 		case SWIM:
 			game = new Swimming(gameID, gameType, athletes, official);
@@ -176,37 +177,38 @@ public class Driver {
 		}
 
 		game.start();
-		printGameResult(game, official);
-		gameResultDB();
+		printGameResult(official);
+		gameResultDB(official);
 		printgameHistory();
 		gameNum++;
 	}
 
-	private void printGameResult(Game game, Official official) {
+	private void printGameResult(Official official) {
 		result = new ArrayList<>();
-		gameid = game.getID();
+		sortedList = official.getResult();
+		scoreList = official.getscoreList();
 		Calendar cal = Calendar.getInstance();
 		DateFormat dateFromat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS");
-		gameResult = game.getPrintResult();
-		scoreList = official.getscoreList();
 		BufferedWriter bw = null;
 		PrintWriter out = null;
 		try {
 			bw = new BufferedWriter(new FileWriter("gameResults.txt", true));
 			out = new PrintWriter(bw);
-			for (int i = 0; i < gameResult.size(); i++) {
+			result.add(gameID + " ," + official.getID() + " ," + dateFromat.format(cal.getTime()));
+			out.println(gameID + " ," + official.getID() + " ," + dateFromat.format(cal.getTime()));
+			for (int i = 0; i < sortedList.size(); i++) {
 				if (i == 0) {
-					result.add(gameid + " ," + gameResult.get(i) + " ," + dateFromat.format(cal.getTime()));
-					out.println(gameid + " ," + gameResult.get(i) + " ," + dateFromat.format(cal.getTime()));
+					result.add(sortedList.get(i).getID() + " ," + scoreList.get(i) + " , 5");
+					out.println(sortedList.get(i).getID() + " ," + scoreList.get(i) + " , 5");
 				} else if (i == 1) {
-					result.add(gameResult.get(i) + " ," + scoreList.get(i) + " , 5");
-					out.println(gameResult.get(i) + " ," + scoreList.get(i) + " , 5");
+					result.add(sortedList.get(i).getID() + " ," + scoreList.get(i) + " , 2");
+					out.println(sortedList.get(i).getID() + " ," + scoreList.get(i) + " , 2");
 				} else if (i == 2) {
-					result.add(gameResult.get(i) + " ," + scoreList.get(i) + " , 2");
-					out.println(gameResult.get(i) + " ," + scoreList.get(i) + " , 2");
-				} else if (i == 3) {
-					result.add(gameResult.get(i) + " ," + scoreList.get(i) + " , 1");
-					out.println(gameResult.get(i) + " ," + scoreList.get(i) + " , 1");
+					result.add(sortedList.get(i).getID() + " ," + scoreList.get(i) + " , 1");
+					out.println(sortedList.get(i).getID() + " ," + scoreList.get(i) + " , 1");
+				} else {
+					result.add(sortedList.get(i).getID() + " ," + scoreList.get(i) + " , 0");
+					out.println(sortedList.get(i).getID() + " ," + scoreList.get(i) + " , 0");
 				}
 			}
 		} catch (FileNotFoundException e1) {
@@ -230,22 +232,22 @@ public class Driver {
 
 	}
 
-	private void gameResultDB() {
-		Integer[] rank = {0,5,2,1};
+	private void gameResultDB(Official official) {
+		Integer[] rank = { 5, 2, 1, 0, 0, 0, 0, 0 };
 		try {
 			Class.forName("org.sqlite.JDBC");
 			Connection gameResults = DriverManager.getConnection("jdbc:sqlite:gameResults.db");
-			for (int i = 1; i < gameResult.size(); i++) {
+			for (int i = 0; i < sortedList.size(); i++) {
 				PreparedStatement pstmt = gameResults.prepareStatement("insert into result values(?,?,?,?,?)");
-				pstmt.setString(1, gameid);
-				pstmt.setString(2, gameResult.get(0));
-				pstmt.setString(3, gameResult.get(i));
+				pstmt.setString(1, gameID);
+				pstmt.setString(2, official.getID());
+				pstmt.setString(3, sortedList.get(i).getID());
 				pstmt.setInt(4, scoreList.get(i));
 				pstmt.setInt(5, rank[i]);
 				pstmt.executeUpdate();
 			}
 		} catch (Exception e) {
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			e.printStackTrace();
 		}
 
 	}
@@ -307,6 +309,10 @@ public class Driver {
 		return result;
 	}
 
+	public List<Integer> getScoreList() {
+		return scoreList;
+	}
+
 	public ArrayList<String> getgamesHistory() {
 		return gamesHistory;
 	}
@@ -314,23 +320,23 @@ public class Driver {
 	public ArrayList<String> getathletePoint() {
 		return athletePoint;
 	}
-	
+
 	// View Controller
-	
-	public void newGame(){
+
+	public void newGame() {
 		NewGame newGame = new NewGame(this);
 		window.setScene(newGame.getScene());
 		window.setTitle(newGame.getTitle());
 	}
 
-	public void gameHistory(){
+	public void gameHistory() {
 		ArrayList<String> history = getgamesHistory();
 		GameHistory gameHistory = new GameHistory(this, history);
 		window.setTitle(gameHistory.getTitle());
 		window.setScene(gameHistory.getScene());
 	}
 
-	public void athletePoints(){
+	public void athletePoints() {
 		printSortAthelets();
 		ArrayList<String> points = getathletePoint();
 		AthletePoints athletePoints = new AthletePoints(this, points);
@@ -338,32 +344,24 @@ public class Driver {
 		window.setScene(athletePoints.getScene());
 	}
 
-	public void result(String gameType, ArrayList<Athlete> athletes, Official official){
+	public void result(String gameType, ArrayList<Athlete> athletes, Official official) {
 		startgame(gameType, athletes, official);
 		ArrayList<String> result = getresult();
-		Result resultScene = new Result(this, result);
+		List<Athlete> athleteList = official.getResult();
+		List<Integer> score = getScoreList();
+		Result resultScene = new Result(this, athleteList, result, score);
 		window.setTitle(resultScene.getTitle());
 		window.setScene(resultScene.getScene());
 	}
 
-	public void mainPage(){
+	public void mainPage() {
 		MainScene mainScene = new MainScene(this);
 		window.setTitle(mainScene.getTitle());
 		window.setScene(mainScene.getScene());
 	}
 
-	public void exit(){
+	public void exit() {
 		window.close();
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 }

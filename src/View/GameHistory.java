@@ -1,5 +1,8 @@
 package View;
-
+/**
+ * @author Hsienting Chu
+ *
+ */
 import java.util.List;
 
 import Controller.Driver;
@@ -12,7 +15,7 @@ import javafx.scene.layout.AnchorPane;
 
 public class GameHistory {
     private Driver driver;
-    private String sceneTitle = "Ozlympic Game";
+    private String sceneTitle = "Game History";
 
     AnchorPane rootpane3 = new AnchorPane();
     Button btBacktoMain3 = new Button("Main Screen");
