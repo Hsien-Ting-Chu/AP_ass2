@@ -49,7 +49,7 @@ public class NewGame {
     ArrayList<Athlete> athletesList = new ArrayList<>();
     
     ArrayList<Official> officialList =  new ArrayList<>();
-    ArrayList<Athlete> SelectedAthlete = new ArrayList<>();
+    ArrayList<Athlete> SelectedAthlete ;
 	
 
     public NewGame(Driver driver){
@@ -143,7 +143,7 @@ public class NewGame {
 		    });
 			
 		btStartGame.setOnAction(e -> {
-			
+			SelectedAthlete = new ArrayList<>();
 			ObservableList<Participants> OBSelectedAthlete = ParticipantsList1.getSelectionModel().getSelectedItems();
 			ObservableList<Participants> OBSelectedOfficial = ParticipantsList2.getSelectionModel().getSelectedItems();
 
